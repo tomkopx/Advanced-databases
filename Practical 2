@@ -1,0 +1,182 @@
+--Task 1.1
+
+DROP TYPE Name force;
+DROP TYPE Street force;
+DROP TYPE Address force;
+DROP TYPE peopleType force;
+DROP TABLE peopleTable PURGE;
+
+CREATE TYPE Name AS OBJECT (
+	firstname VARCHAR2(20),
+	lastname VARCHAR(20));
+	
+CREATE TYPE Street AS OBJECT (
+	streetnumber NUMBER,
+	streetname VARCHAR2(30) );
+		
+CREATE TYPE Address AS OBJECT (
+	street_and_number Street,
+	city VARCHAR2(30),
+	postal_code VARCHAR(10) );
+	
+CREATE TYPE peopleType AS OBJECT (
+	pname Name,
+	paddress Address,
+	date_of_birth DATE);
+	
+CREATE TABLE peopleTable OF peopleType;
+
+--Task 1.2
+
+INSERT INTO peopleTable
+	values
+	(Name('John', 'Smith'),
+	 Address(Street(10, 'Merchiston'), 'Edinburgh', 'EH10 5DT'),
+	 '21-Feb-89'
+	);
+	
+INSERT INTO peopleTable
+	values
+	(Name('Steven', 'PHD'),
+	 Address(Street(12, 'Merchiston'), 'Edinburgh', 'EH10 5DT'),
+	 '21-Mar-90'
+	);
+	
+INSERT INTO peopleTable
+	values
+	(Name('Stev', 'Grah'),
+	 Address(Street(23, 'Merchiston'), 'Edinburgh', 'EH10 5DT'),
+	 '10-Jan-97'
+	);
+	
+INSERT INTO peopleTable
+	values
+	(Name('Stef', 'Bab'),
+	 Address(Street(100, 'Leith Walk'), 'Edinburgh', 'EH10 5DT'),
+	 '07-Feb-34'
+	);
+	
+INSERT INTO peopleTable
+	values
+	(Name('Stavey', 'Gravy'),
+	 Address(Street(05, 'Merchiston'), 'Edinburgh', 'EH10 5DT'),
+	 '11-Dec-96'
+	);
+
+--Task 1.3
+	
+SELECT p.pname.lastname, p.paddress.street_and_number.streetname
+FROM peopleTable p
+WHERE p.pname.firstname LIKE ('John') AND p.pname.lastname LIKE ('Smith');
+	
+--Task 1.4
+
+SELECT *
+FROM peopleTable p;
+
+SELECT p.pname.lastname
+FROM peopleTable p;
+
+SELECT p.pname
+FROM peopleTable p;
+
+--Task 1.5
+
+DROP TYPE Street force;
+DROP TYPE Country force;
+DROP TYPE Address force;	
+	
+CREATE TYPE Street AS OBJECT (
+	streetnumber NUMBER,
+	streetname VARCHAR2(30),
+	flatnumber NUMBER );	
+
+CREATE TYPE Country AS OBJECT (
+	country VARCHAR2(30));
+	
+CREATE TYPE Address AS OBJECT (
+	street Street,
+	city VARCHAR2(30),
+	postal_code VARCHAR2(10)
+	country Country);
+	
+--Task 1.6
+
+DROP TYPE Name force;
+DROP TYPE Phone force;
+DROP TYPE Street force;
+DROP TYPE Country force;
+DROP TYPE Address force;
+DROP TABLE person_table PURGE;	
+
+CREATE TYPE Name AS OBJECT (
+	firstname VARCHAR2(20),
+	middleinitial VARCHAR2(2),
+	lastname VARCHAR(20));
+	
+CREATE TYPE Phone AS OBJECT (
+	business NUMBER,
+	home NUMBER,
+	mobile NUMBER);
+	
+CREATE TYPE Street AS OBJECT (
+	streetnumber NUMBER,
+	streetname VARCHAR2(30),
+	flatnumber NUMBER );	
+
+CREATE TYPE Country AS OBJECT (
+	country VARCHAR2(30));
+	
+CREATE TYPE Address AS OBJECT (
+	streetname Street,
+	city VARCHAR2(30),
+	postal_code VARCHAR2(10),
+	countryname Country);
+
+--Task 1.7
+	
+CREATE TYPE person AS OBJECT (
+	pname Name,
+	pphone Phone,
+	paddress Address);
+	
+--Task 1.8
+
+CREATE TABLE person_table OF person;
+
+--Task 1.9
+
+INSERT INTO person_table
+	values
+	(Name('John', 'a', 'Smith'),
+	 Phone(1,2,3),
+	 Address(Street(10, 'Merchiston', 2), 'Edinburgh', 'EH10 5DT', Country('Argentina'))
+	);
+	
+INSERT INTO person_table
+	values
+	(Name('Stef', 'b', 'Cheeky'),
+	 Phone(4,5,6),
+	 Address(Street(22, 'Merchiston', 1), 'Edinburgh', 'EH10 5DT', Country('tina'))
+	);
+	
+INSERT INTO person_table
+	values
+	(Name('Ste', 'c', 'Grah'),
+	 Phone(7,8,9),
+	 Address(Street(9, 'Merchiston', 4), 'Edinburgh', 'EH10 5DT', Country('Argen'))
+	);
+	
+INSERT INTO person_table
+	values
+	(Name('Diddly', 'd', 'Doo'),
+	 Phone(10,11,12),
+	 Address(Street(4, 'Merchiston', 3), 'Edinburgh', 'EH10 5DT', Country('Arg'))
+	);
+	
+INSERT INTO person_table
+	values
+	(Name('Man', 'e', 'Gentle'),
+	 Phone(13,14,15),
+	 Address(Street(100, 'Merchiston', 1), 'Edinburgh', 'EH10 5DT', Country('gent'))
+	);
