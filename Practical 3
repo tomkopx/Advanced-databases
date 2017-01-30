@@ -1,0 +1,126 @@
+
+--Task 2
+
+--All stuff found in practical 2 file
+
+DROP TYPE employment force;
+DROP TABLE employment_table PURGE;
+
+CREATE TYPE employment AS OBJECT (
+	employee_r ref employee,
+	position ref job);
+
+/
+	
+CREATE TABLE employment_table (
+	employee ref employee scope is employee_table,
+	position ref job scope is job_table);
+	
+/
+	
+INSERT INTO employment_table 
+	SELECT ref(e), ref(j)
+	FROM job_table j, employee_table e
+	WHERE e.emp_ID = 100
+	AND j.job_ID = 100;
+	
+/	
+
+INSERT INTO employment_table 
+	SELECT ref(e), ref(j)
+	FROM job_table j, employee_table e
+	WHERE e.emp_ID = 101
+	AND j.job_ID = 101;
+
+/
+	
+INSERT INTO employment_table 
+	SELECT ref(e), ref(j)
+	FROM job_table j, employee_table e
+	WHERE e.emp_ID = 102
+	AND j.job_ID = 102;
+	
+--Task 3
+
+SELECT DEREF(p.employee), DEREF(p.position) 
+FROM employment_table p;
+
+SELECT p.employee.pname.firstname, p.employee.pname.lastname, p.position.jobtitle, p.position.salary_amount
+FROM employment_table p;
+
+--Task 4
+
+SELECT p.employee.pname.firstname, p.employee.pname.lastname
+FROM employment_table p
+WHERE p.position.salary_amount > 20000;
+
+SELECT p.position.jobtitle
+FROM employment_table p
+WHERE p.employee.paddress.city LIKE 'Edinburgh';
+
+--Task 5
+
+/*Object-relational approach is much easier to understand to a programmer like me who is used to object oriented approach
+and therefore is way easier to implement and maintain, you just have to have a bit for DROP statements for the types in this approach.
+Relational approach does not like nested entities and so you have to normalise the system before you make the database, which is tedious
+Whereas in object_relational approach you just make your entities with user defined types and they handle it real well. 
+Another real useful thing is that you do not need to perform joins during queries in object relational approach as 
+the entities are referenced during the creation of the type and table so its super easy to do queries through
+multiple entities at once.*/
+
+--Task 6
+
+CREATE TYPE project AS OBJECT (
+	project_id NUMBER,
+	project_leader ref person,
+	project_title VARCHAR(30));
+	
+CREATE TABLE project_table OF project;
+
+ALTER TABLE project_table
+ADD (CONSTRAINT projectID PRIMARY KEY (project_id));
+
+INSERT INTO project_table
+	values
+	(1,
+	(SELECT REF(p)
+	FROM person_table p
+	WHERE p.pname.firstname LIKE 'Diddly'),
+	'Where to find the Diddlers'
+	);
+	
+INSERT INTO project_table
+	values
+	(2,
+	(SELECT REF(p)
+	FROM person_table p
+	WHERE p.pname.firstname LIKE 'Ste'),
+	'How to be cheeky'
+	);
+	
+INSERT INTO project_table
+	values
+	(3,
+	(SELECT REF(p)
+	FROM person_table p
+	WHERE p.pname.firstname LIKE 'Stef'),
+	'How steven is a bad name'
+	);
+	
+--Task 7
+
+CREATE TABLE project_membership_table (
+	project_id ref project scope is project_table,
+	member ref person scope is employee_table);
+	
+INSERT INTO project_membership_table 
+	SELECT ref(e), ref(p)
+	FROM project_table p, employee_table e
+	WHERE e.emp_ID = 100
+	AND p.project_id = 1;
+	
+
+
+
+
+
