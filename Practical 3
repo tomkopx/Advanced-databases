@@ -145,8 +145,10 @@ CREATE OR REPLACE TYPE job2 AS OBJECT(
 	years_of_experience INT,
 	MEMBER FUNCTION evaluate_qualification RETURN STRING,
 	MEMBER FUNCTION salary_fraction(N REAL) RETURN INT);
+
+--Had to research how to do 2 member functions in 1 body
 	
-CREATE OR REPLACE TYPE BODY job2 AS 
+CREATE OR REPLACE TYPE BODY job2 AS
 MEMBER FUNCTION evaluate_qualification RETURN STRING IS
 BEGIN
 	IF self.years_of_experience < 2 THEN
@@ -157,9 +159,7 @@ BEGIN
 	RETURN 'great!';
 	END IF;
 END evaluate_qualification;
-END;
 
-CREATE OR REPLACE TYPE BODY job2 AS 
 MEMBER FUNCTION salary_fraction(N REAL) RETURN INT IS
 sal INT;
 BEGIN
@@ -167,9 +167,45 @@ BEGIN
 	RETURN sal;
 END salary_fraction;
 END;
+
+--Task 9
+
+CREATE TABLE job2_table OF job2;
+
+INSERT INTO job2_table
+	values
+	('Project Manager',
+	 100,
+	 60000,
+	 7
+	);
 	
+/
 	
+INSERT INTO job2_table
+	values
+	('Lead developer',
+	 101,
+	 50000,
+	 14
+	);
 	
+/
+	
+INSERT INTO job2_table
+	values
+	('3D Artist',
+	 102,
+	 35000,
+	 8
+	);
+	
+SELECT j.evaluate_qualification(), j.salary_fraction(12)
+FROM job2_table j;
+
+SELECT *
+FROM job2_table j
+WHERE j.evaluate_qualification() LIKE 'OK' AND j.salary_fraction(6) > 10000;
 	
 	
 	
