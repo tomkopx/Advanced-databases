@@ -154,12 +154,16 @@ INSERT INTO person_table
 	 Address(Street(10, 'Merchiston', 2), 'Edinburgh', 'EH10 5DT', Country('Argentina'))
 	);
 	
+/
+	
 INSERT INTO person_table
 	values
 	(Name('Stef', 'b', 'Cheeky'),
 	 Phone(4,5,6),
 	 Address(Street(22, 'Merchiston', 1), 'Edinburgh', 'EH10 5DT', Country('tina'))
 	);
+	
+/
 	
 INSERT INTO person_table
 	values
@@ -168,12 +172,16 @@ INSERT INTO person_table
 	 Address(Street(9, 'Merchiston', 4), 'Edinburgh', 'EH10 5DT', Country('Argen'))
 	);
 	
+/
+	
 INSERT INTO person_table
 	values
 	(Name('Diddly', 'd', 'Doo'),
 	 Phone(10,11,12),
 	 Address(Street(4, 'Merchiston', 3), 'Edinburgh', 'EH10 5DT', Country('Arg'))
 	);
+	
+/
 	
 INSERT INTO person_table
 	values
@@ -211,6 +219,8 @@ INSERT INTO employee_table
 	 100
 	);
 	
+/
+	
 INSERT INTO employee_table
 	values
 	(Name('Gre', 'f', 'Mandible'),
@@ -219,6 +229,8 @@ INSERT INTO employee_table
 	 'Male',
 	 101
 	);
+	
+/
 	
 INSERT INTO employee_table
 	values
