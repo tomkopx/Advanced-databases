@@ -176,8 +176,8 @@ INSERT INTO job2_table
 	values
 	('Project Manager',
 	 100,
-	 60000,
-	 7
+	 80000,
+	 2
 	);
 	
 /
@@ -206,9 +206,111 @@ FROM job2_table j;
 SELECT *
 FROM job2_table j
 WHERE j.evaluate_qualification() LIKE 'OK' AND j.salary_fraction(6) > 10000;
+
+--Task 10
+
+DROP TYPE Employee2 force;
+DROP TYPE emp force;
+
+CREATE OR REPLACE TYPE Employee2 as OBJECT (
+	name VARCHAR2(20),
+	salary INTEGER)
+	not final
+METHOD giveraise (percent INTEGER);
 	
+CREATE METHOD giveraise (percent INTEGER) for Employee2
+BEGIN
+	set self.salary = self.salary + (self.salary * percent) / 100;
+END;
+
+CREATE FUNCTION Publisher (n VARCHAR2(20), b VARCHAR2(20))
+RETURNS Publisher
+BEGIN
+	set name = n;
+	set branch = b;
+END;
 	
+CREATE TYPE emp AS OBJECT (
+	name VARCHAR2(20),
+	salary NUMBER,
+	MEMBER FUNCTION giveraise(percent NUMBER) return NUMBER);
 	
+CREATE OR REPLACE TYPE BODY emp AS
+MEMBER FUNCTION giveraise (percent NUMBER) return NUMBER IS
+sal NUMBER;
+BEGIN
+	sal :=(self.salary+(self.salary * percent)/100);
+	return sal;
+END giveraise;
+END;
+
+SELECT * 
+FROM emp_table easier
+WHERE e.giveraise(20)>60000;
+
+ALTER TYPE emp
+ADD MEMBER FUNCTION evaluate_qualif RETURN STRING
+CASCADE;
+
+--Task 11
+
+ALTER TYPE person
+ADD MEMBER FUNCTION print_name RETURN VARCHAR2(200)
+CASCADE;
+
+CREATE OR REPLACE TYPE BODY person AS
+MEMBER FUNCTION print_name RETURN VARCHAR2 IS
+personName VARCHAR2(200);
+BEGIN
+	personName := self.pname.lastname || ', ' || self.pname.firstname || ' ' || self.pname.middleinitial;
+	return personName;
+END print_name;
+END;
+
+--Just a test to see if the function works (IT DOES !)
+SELECT p.print_name()
+FROM person_table p;
+
+--Task 12
+
+ALTER TYPE person
+ADD MEMBER FUNCTION number_types RETURN NUMBER
+CASCADE;
+
+
+CREATE OR REPLACE TYPE BODY person AS
+MEMBER FUNCTION print_name RETURN VARCHAR2 IS
+personName VARCHAR2(200);
+BEGIN
+	personName := self.pname.lastname || ', ' || self.pname.firstname || ' ' || self.pname.middleinitial;
+	return personName;
+END print_name;
+
+--Very hacky code but it works
+MEMBER FUNCTION number_types RETURN NUMBER IS
+types NUMBER;
+BEGIN
+	types := 0;
+	IF self.pphone.business IS NOT NULL THEN
+	types := types + 1;
+	END IF;
+	IF self.pphone.home IS NOT NULL THEN
+	types := types + 1;
+	END IF;
+	IF self.pphone.mobile IS NOT NULL THEN
+	types := types + 1;
+	END IF;
+	RETURN types;
+END number_types;
+END;
+
+--Testing the new function (Works)
+UPDATE person_table p
+set p.pphone = Phone(1,2, NULL)
+WHERE p.pname.firstname LIKE 'John';
+
+SELECT p.number_types()
+FROM person_table p;	
 
 
 
