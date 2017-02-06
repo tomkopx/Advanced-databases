@@ -1,0 +1,122 @@
+--Task 2
+
+--Example 1
+
+DROP TYPE People force;
+DROP TYPE Student force;
+DROP TABLE student_table PURGE;
+
+CREATE OR REPLACE TYPE People AS OBJECT(
+	pname Name,
+	paddress Address,
+	birthDate DATE)
+	NOT FINAL;
+	
+CREATE OR REPLACE TYPE Student UNDER People(
+	sid VARCHAR2(10),
+	degree VARCHAR2(20),
+	programme VARCHAR2(20));
+	
+CREATE OR REPLACE TABLE student_table OF Student (
+	sid PRIMARY KEY);
+	
+ALTER TABLE student_table 
+ADD(CONSTRAINT studentID PRIMARY KEY(sid));
+
+--Example 2
+
+CREATE OR REPLACE TYPE Teacher UNDER People (
+	tid VARCHAR2(10),
+	salary INTEGER,
+	Position VARCHAR2(20),
+	Insurance_no VARCHAR2(20));
+	
+CREATE TABLE teacher_table OF Teacher (
+	tid PRIMARY KEY,
+	CONSTRAINT Insurance_no_const UNIQUE(Insurance_no),
+	CONSTRAINT Position_const CHECK (Position IN ('Lecturer', 'Senior Lecturer', 'Professor')));
+	
+ALTER TABLE teacher_table 
+ADD(CONSTRAINT Position_const CHECK (Position IN ('Lecturer', 'Senior Lecturer', 'Professor')));
+
+--Example 3
+
+CREATE TABLE student_table OF Student (
+	CONSTRAINT surname_const CHECK (pname.lastname IS NOT NULL));
+	
+ALTER TABLE student_table
+ADD(CONSTRAINT surname_const CHECK (pname.lastname IS NOT NULL));
+
+--Task 3
+
+CREATE TYPE phone_array AS VARRAY(10) OF VARCHAR2(12);
+
+CREATE TABLE company1 (
+	name VARCHAR2(20),
+	phone phone_array);
+	
+INSERT INTO company1 
+	values
+	('abs',
+	phone_array('243-4758', '485-2534')
+	);
+	
+/
+	
+INSERT INTO company1 
+	values
+	('sab',
+	phone_array('111-1111', '222-2222')
+	);
+	
+/
+	
+INSERT INTO company1 
+	values
+	('bsa',
+	phone_array('333-3333', '444-4444', '555-5555')
+	);
+	
+COLUMN name 			HEADING 'Company Name'
+COLUMN phone_array 		HEADING 'Phone number'
+SELECT *
+FROM company1;
+
+--Task 4
+
+CREATE TYPE phone_nested AS TABLE OF VARCHAR2(12);
+
+CREATE TABLE company2(
+	name VARCHAR2(20),
+	phone phone_nested)
+	NESTED TABLE phone STORE AS phone_nt_table;
+	
+INSERT INTO company2 
+	values
+	('abs',
+	phone_nested('243-4758', '485-2534')
+	);
+	
+/
+
+INSERT INTO company2 
+	values
+	('sab',
+	phone_nested('111-1111', '222-2222')
+	);
+	
+/
+	
+INSERT INTO company2 
+	values
+	('bsa',
+	phone_nested('333-3333', '444-4444', '555-5555')
+	);
+	
+COLUMN Name		HEADING 'Company Name'
+COLUMN Phone	HEADING 'Phone number'
+SELECT c.name, t.*
+FROM company2 c, table(c.phone) t;
+
+--Task 5
+	
