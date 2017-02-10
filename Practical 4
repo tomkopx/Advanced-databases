@@ -17,7 +17,7 @@ CREATE OR REPLACE TYPE Student UNDER People(
 	degree VARCHAR2(20),
 	programme VARCHAR2(20));
 	
-CREATE OR REPLACE TABLE student_table OF Student (
+CREATE TABLE student_table OF Student (
 	sid PRIMARY KEY);
 	
 ALTER TABLE student_table 
@@ -49,7 +49,7 @@ ADD(CONSTRAINT surname_const CHECK (pname.lastname IS NOT NULL));
 
 --Task 3
 
-CREATE TYPE phone_array AS VARRAY(10) OF VARCHAR2(12);
+CREATE OR REPLACE TYPE phone_array AS VARRAY(10) OF VARCHAR2(12);
 
 CREATE TABLE company1 (
 	name VARCHAR2(20),
@@ -84,9 +84,9 @@ FROM company1;
 
 --Task 4
 
-CREATE TYPE phone_nested AS TABLE OF VARCHAR2(12);
+CREATE OR REPLACE TYPE phone_nested AS TABLE OF VARCHAR2(12);
 
-CREATE TABLE company2(
+CREATE TABLE company2 (
 	name VARCHAR2(20),
 	phone phone_nested)
 	NESTED TABLE phone STORE AS phone_nt_table;
@@ -113,10 +113,77 @@ INSERT INTO company2
 	phone_nested('333-3333', '444-4444', '555-5555')
 	);
 	
-COLUMN Name		HEADING 'Company Name'
-COLUMN Phone	HEADING 'Phone number'
+COLUMN c.name		HEADING 'Company Name'
+COLUMN t.*			HEADING 'Phone number'
 SELECT c.name, t.*
 FROM company2 c, table(c.phone) t;
 
 --Task 5
 	
+CREATE OR REPLACE TYPE phone_code AS OBJECT (
+	area_code VARCHAR2(10),
+	localnumber VARCHAR2(12));
+	
+CREATE OR REPLACE TYPE phone_numbers AS TABLE OF phone_code;
+
+CREATE TABLE company3 (
+	name VARCHAR2(20),
+	phone phone_numbers)
+	NESTED TABLE phone STORE AS phone_numbers_table;
+	
+--Task 6
+
+INSERT INTO company3 
+	values
+	('abs',
+	phone_numbers(phone_code('0131', '243-4758'), phone_code('0131', '485-2534'))
+	);
+
+/
+
+INSERT INTO company3 
+	values
+	('sab',
+	phone_numbers(phone_code('0131', '111-1111'), phone_code('0131', '222-2222'))
+	);
+	
+/
+
+INSERT INTO company3 
+	values
+	('bsa',
+	phone_numbers(phone_code('0101', '333-3333'), phone_code('0101', '444-4444'), phone_code('0101', '555-5555'))
+	);
+	
+	
+--Task 7
+
+/* Varrays and nested tables violate the 3rd normal form which deals with data redundancy and referential integrity.
+The normalization process does save disk space as you get rid of unnecessary data stored in the database which should reduce the necessary disk space to hold the database.
+However that is not the only purpose of normalization as it is also used for arranging the data into logical groupings, 
+organizing the data in such a way that when you modify it, it will only make change in one place 
+and to access data quickly and efficiently without compromising the integrity of the data in storage. 
+Changing data in object relational model is rather simple (use update and then follow with cascade as to update all dependant objects), so this does not pose a problem anymore.
+Accessing data quickly and efficiently is not a problem either, as computers and servers for that matter have gotten more and more powerful overtime and they will continue to improve. 
+Therefore access times are not a problem either. 
+Also object relational model design is logical and organizing data is super simple.
+*/
+
+--Task 8
+
+COLUMN t.area_code		HEADING 'Area code'
+COLUMN t.localnumber 	HEADING 'Local number'
+SELECT t.area_code, t.localnumber
+FROM company3 c, table(c.phone) t
+WHERE c.name LIKE 'abs';
+
+COLUMN c.name			HEADING 'Company name'
+COLUMN t.area_code 		HEADING 'Area code'
+SELECT c.name, t.area_code
+FROM company3 c, table(c.phone) t
+WHERE t.area_code LIKE '0131';
+
+
+COLUMN t.localnumber	HEADING 'Local number'
+SELECT t.localnumber
+FROM company3 c, table(c.phone) t;
