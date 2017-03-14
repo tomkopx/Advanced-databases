@@ -52,5 +52,26 @@ SELECT max(c.accNum.balance), c.accNum.bID.bID
 FROM CustomerAccountTable c
 WHERE c.accNum.accType LIKE 'savings'
 GROUP BY c.accNum.bID;
+
+
+
+--Question 4d
+
+SELECT e.position.bID.bAddress.street, e.position.bID.bAddress.city, e.position.bID.bAddress.postCode
+FROM EmployeeTable e, BranchTable b
+WHERE e.supervisorID.position.position LIKE 'Manager' AND e.niNum IN (SELECT c.niNum
+                                                                      FROM CustomerTable c);
+																	  
+																	  
+--Question 4e
+
+
+
+
+--Question 4f
+
+SELECT c.pName.firstName, t.*
+FROM CustomerTable c, table(c.pPhone.mobilePhone) t
+WHERE (SELECT count(*) FROM CustomerTable c, table(c.pPhone.mobilePhone) t) > 1; 
   
 

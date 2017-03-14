@@ -156,6 +156,7 @@ CREATE TABLE EmployeeTable OF Employee (
 	CONSTRAINT eFirstName_const CHECK(pName.firstName IS NOT NULL),
 	CONSTRAINT eSurName_const CHECK(pName.surName IS NOT NULL),
 	CONSTRAINT eNiNum_const UNIQUE(niNum),
+	CONSTRAINT ePosition_const CHECK (position.position IN ('Head', 'Manager', 'Leader', 'Accountant', 'Cashier')),
 	CONSTRAINT eSalary_const CHECK(position.salary IS NOT NULL),
 	CONSTRAINT eJoinDate_const CHECK(position.joinDate IS NOT NULL))
 	NESTED TABLE pPhone.mobilePhone STORE AS empMobile_nested_table;
@@ -165,7 +166,7 @@ CREATE TABLE EmployeeTable OF Employee (
 --Account table with all its constraints	
 CREATE TABLE AccountTable OF Account (
 	accNum PRIMARY KEY,
-	CONSTRAINT accType_const CHECK(accType IS NOT NULL),
+	CONSTRAINT accType_const CHECK(accType IN ('savings', 'current')),
 	CONSTRAINT balance_const CHECK(balance IS NOT NULL),
 	CONSTRAINT inRate_const CHECK(inRate IS NOT NULL),
 	CONSTRAINT openDate_const CHECK(openDate IS NOT NULL));	
