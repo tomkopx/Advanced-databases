@@ -65,42 +65,33 @@ CREATE OR REPLACE TYPE Employee UNDER Person (
 	empID NUMBER,
 	supervisorID ref Employee,
 	position Job,
+	MEMBER FUNCTION calculateYears(startDate DATE, endDate DATE) RETURN NUMBER,
 	MEMBER FUNCTION award(yearsWorked NUMBER, noSupervised NUMBER) RETURN STRING);
 
 /
 	
 --Body type for employee - All the functions
 CREATE OR REPLACE TYPE BODY Employee AS
+MEMBER FUNCTION calculateYears(startDate DATE, endDate DATE) RETURN NUMBER IS
+yearsWorked NUMBER;
+BEGIN
+	yearsWorked := ((endDate - startDate)/365);
+	RETURN ROUND(yearsWorked, 0);
+END calculateYears;
+
 MEMBER FUNCTION award(yearsWorked NUMBER, noSupervised NUMBER) RETURN STRING IS
 BEGIN
-	IF yearsWorked > 12 AND noSupervised => 6 THEN
+	IF yearsWorked > 12 AND noSupervised >= 6 THEN
 	RETURN 'Gold medal';
-	ELSIF yearsWorked > 8 AND noSupervised => 3 THEN
+	ELSIF yearsWorked >= 8  AND noSupervised >= 3 THEN
 	RETURN 'Silver medal';
-	ELSIF yearsWorked > 4 THEN
+	ELSIF yearsWorked >= 4 THEN
 	RETURN 'Bronze medal';
+	ELSIF yearsWorked < 4 THEN
+	RETURN 'null';
 	END IF;
 END award;
 END;
-
-/*  USE LATER IN LAST QUERY
-MEMBER FUNCTION yearsWorked RETURN NUMBER IS
-BEGIN 
-	RETURN DATEDIFF(year, self.position.joinDate, GETDATE());
-END yearsWorked;
-
-MEMBER FUNCTION noSupervised RETURN NUMBER IS
-supervised NUMBER;
-BEGIN 
-	SELECT COUNT(*)
-	INTO supervised
-	FROM EmployeeTable
-	WHERE supervisorID = self.empID;
-				  
-	RETURN supervised;
-END noSupervised;
-*/
-
 
 /
 
@@ -849,7 +840,7 @@ INSERT INTO EmployeeTable
 	values
 	(Address('Road', 'Edinburgh', 'EH8 4KS'),
 	Name('Mrs', 'Genna', 'Hitty'),
-	Phone('01311112277', mobile_nested('0770209999', '0781207865', '0781209125')),
+	Phone('01311112277', mobile_nested('0790209999', '0781207865', '0781209125')),
 	'NI225',
 	113,
 	(SELECT REF(e)
@@ -1196,7 +1187,7 @@ INSERT INTO CustomerTable
 	values
 	(Address('Road', 'Edinburgh', 'EH8 4KS'),
 	Name('Mrs', 'Genna', 'Hitty'),
-	Phone('01311112277', mobile_nested('0770209999', '0781207865', '0781209125')),
+	Phone('01311112277', mobile_nested('0790209999', '0781207865', '0781209125')),
 	'NI225',
 	1014);
 	
